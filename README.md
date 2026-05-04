@@ -10,13 +10,13 @@ Todas las funciones centrales (convolución 2D, Otsu, componentes conectados, Ha
 
 ## Características
 
-- ✅ Pipeline completo de segmentación y conteo en una sola llamada
-- ✅ Uso modular: cada etapa puede ejecutarse de forma independiente
-- ✅ Múltiples métodos de umbralización (Otsu, adaptativo, fijo)
-- ✅ Detectores de bordes propios: Sobel, Prewitt, Laplaciano
-- ✅ Detector de esquinas Harris implementado desde cero
-- ✅ Medición de propiedades geométricas (área, perímetro, centroide, circularidad, bbox)
-- ✅ Visualización integrada de cada paso del pipeline
+- Pipeline completo de segmentación y conteo en una sola llamada
+- Uso modular: cada etapa puede ejecutarse de forma independiente
+- Múltiples métodos de umbralización (Otsu, adaptativo, fijo)
+- Detectores de bordes propios: Sobel, Prewitt, Laplaciano
+- Detector de esquinas Harris implementado desde cero
+- Medición de propiedades geométricas (área, perímetro, centroide, circularidad, bbox)
+- Visualización integrada de cada paso del pipeline
 
 ---
 
