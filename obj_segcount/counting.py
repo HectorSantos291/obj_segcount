@@ -222,3 +222,105 @@ def _imprimir_tabla(propiedades):
     print("=" * 75)
     print(f"Total de objetos: {len(propiedades)}")
     print("=" * 75 + "\n")
+
+
+# ============================================================================
+# FUNCIONES CON CONFIGURACIONES PREDEFINIDAS
+# ============================================================================
+
+def contar_objetos_claros(imagen, mostrar_pasos=True):
+    """Configuracion predefinida para objetos CLAROS sobre fondo OSCURO.
+    
+    Ideal para: monedas, piezas metalicas, objetos brillantes.
+    
+    Caracteristicas:
+    - Umbral adaptativo (para iluminacion no uniforme)
+    - Sin inversion de mascara
+    - Filtro suave para evitar fusionar objetos cercanos
+    - Area minima 200 pixeles
+    
+    Args:
+        imagen: Imagen RGB o escala de grises
+        mostrar_pasos: Si True, visualiza el pipeline completo
+        
+    Returns:
+        dict con resultados (conteo, etiquetas, propiedades, etc.)
+    """
+    return contar_objetos(
+        imagen,
+        tipo_filtro='gaussiano',
+        sigma_filtro=0.5,              # sigma bajo para no fusionar
+        metodo_umbral='adaptativo',
+        tamano_bloque=15,
+        C_adaptativo=5,
+        min_tamano_objeto=200,
+        max_tamano_objeto=50000,
+        quitar_bordes=False,
+        ecualizar=False,               # no ecualizar con adaptativo
+        invertir=False,                # objetos claros = blancos
+        mostrar_pasos=mostrar_pasos
+    )
+
+
+def contar_objetos_oscuros(imagen, mostrar_pasos=True):
+    """Configuracion predefinida para objetos OSCUROS sobre fondo CLARO.
+    
+    Ideal para: tornillos sobre mesa blanca, piezas oscuras, objetos opacos.
+    
+    Caracteristicas:
+    - Umbral de Otsu (automatico)
+    - Inversion de mascara activada
+    - Ecualizacion de histograma para mejorar contraste
+    - Area minima 100 pixeles
+    
+    Args:
+        imagen: Imagen RGB o escala de grises
+        mostrar_pasos: Si True, visualiza el pipeline completo
+        
+    Returns:
+        dict con resultados (conteo, etiquetas, propiedades, etc.)
+    """
+    return contar_objetos(
+        imagen,
+        tipo_filtro='gaussiano',
+        sigma_filtro=1.5,
+        metodo_umbral='otsu',
+        min_tamano_objeto=100,
+        max_tamano_objeto=50000,
+        quitar_bordes=True,
+        ecualizar=True,                # mejorar contraste
+        invertir=True,                 # objetos oscuros -> blancos
+        mostrar_pasos=mostrar_pasos
+    )
+
+
+def contar_objetos_pequenos(imagen, mostrar_pasos=True):
+    """Configuracion predefinida para objetos PEQUENOS y CERCANOS.
+    
+    Ideal para: granos (cafe, arroz, semillas), componentes electronicos pequenos.
+    
+    Caracteristicas:
+    - Umbral de Otsu
+    - Filtro muy suave (sigma bajo) para evitar fusion
+    - Area minima MUY baja (50 pixeles)
+    - Inversion de mascara activada
+    
+    Args:
+        imagen: Imagen RGB o escala de grises
+        mostrar_pasos: Si True, visualiza el pipeline completo
+        
+    Returns:
+        dict con resultados (conteo, etiquetas, propiedades, etc.)
+    """
+    return contar_objetos(
+        imagen,
+        tipo_filtro='gaussiano',
+        sigma_filtro=0.5,              # sigma muy bajo
+        metodo_umbral='otsu',
+        min_tamano_objeto=50,          # umbral bajo para pequenos
+        max_tamano_objeto=5000,        # evitar regiones grandes
+        quitar_bordes=True,
+        ecualizar=True,
+        invertir=True,
+        mostrar_pasos=mostrar_pasos
+    )

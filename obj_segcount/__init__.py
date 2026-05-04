@@ -38,4 +38,7 @@ from obj_segcount.properties import (
     medir_bbox, medir_circularidad, medir_todo,
 )
 
-from obj_segcount.counting import contar_objetos, visualizar_resultados
+from obj_segcount.counting import (
+    contar_objetos, visualizar_resultados,
+    contar_objetos_claros, contar_objetos_oscuros, contar_objetos_pequenos,
+)

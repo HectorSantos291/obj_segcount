@@ -93,6 +93,110 @@ resultados = osc.contar_objetos(
 
 ---
 
+## Configuraciones recomendadas según tipo de imagen
+
+La librería incluye **funciones predefinidas** que automáticamente seleccionan los mejores parámetros según las características de tus objetos. Úsalas en lugar de configurar manualmente todos los parámetros.
+
+### 1. Objetos claros sobre fondo oscuro
+
+**Ejemplos:** Monedas, piezas metálicas, objetos brillantes, componentes con acabado reflectante.
+
+**Función recomendada:**
+
+```python
+import cv2
+import obj_segcount as osc
+
+img = cv2.imread("monedas.jpg")
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+# Configuracion automatica para objetos claros
+resultados = osc.contar_objetos_claros(img, mostrar_pasos=True)
+print(f"Objetos detectados: {resultados['conteo']}")
+```
+
+**Características de esta configuración:**
+- Umbral adaptativo (maneja iluminación no uniforme)
+- Sin inversión de máscara
+- Filtro suave (σ=0.5) para evitar fusionar objetos cercanos
+- Área mínima: 200 píxeles
+
+### 2. Objetos oscuros sobre fondo claro
+
+**Ejemplos:** Tornillos sobre mesa blanca, piezas de plástico oscuro, componentes opacos, objetos de metal sin brillo.
+
+**Función recomendada:**
+
+```python
+import cv2
+import obj_segcount as osc
+
+img = cv2.imread("tornillos.jpg")
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+# Configuracion automatica para objetos oscuros
+resultados = osc.contar_objetos_oscuros(img, mostrar_pasos=True)
+print(f"Objetos detectados: {resultados['conteo']}")
+```
+
+**Características de esta configuración:**
+- Umbral de Otsu (automático)
+- Inversión de máscara activada
+- Ecualización de histograma para mejorar contraste
+- Área mínima: 100 píxeles
+
+### 3. Objetos pequeños y cercanos
+
+**Ejemplos:** Granos de café, arroz, semillas, componentes electrónicos pequeños, partículas.
+
+**Función recomendada:**
+
+```python
+import cv2
+import obj_segcount as osc
+
+img = cv2.imread("granos_cafe.jpg")
+img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+
+# Configuracion automatica para objetos pequenos
+resultados = osc.contar_objetos_pequenos(img, mostrar_pasos=True)
+print(f"Objetos detectados: {resultados['conteo']}")
+```
+
+**Características de esta configuración:**
+- Umbral de Otsu
+- Filtro muy suave (σ=0.5) para evitar fusión entre objetos cercanos
+- Área mínima MUY baja: 50 píxeles
+- Área máxima: 5000 píxeles (evita regiones grandes)
+
+### Tabla comparativa de configuraciones
+
+| Tipo de objeto | Función | Umbral | Ecualizar | Invertir | σ filtro | Área mín |
+|---|---|---|---|---|---|---|
+| Claros / fondo oscuro | `contar_objetos_claros()` | Adaptativo | No | No | 0.5 | 200 |
+| Oscuros / fondo claro | `contar_objetos_oscuros()` | Otsu | Sí | Sí | 1.5 | 100 |
+| Pequeños y cercanos | `contar_objetos_pequenos()` | Otsu | Sí | Sí | 0.5 | 50 |
+
+### ¿Cuándo usar configuración manual?
+
+Si ninguna de las funciones predefinidas funciona bien para tu caso, usa `contar_objetos()` con parámetros personalizados:
+
+```python
+resultados = osc.contar_objetos(
+    imagen,
+    tipo_filtro='gaussiano',
+    sigma_filtro=1.0,           # Ajusta según necesites
+    metodo_umbral='otsu',       # 'otsu', 'adaptativo' o 'fijo'
+    min_tamano_objeto=150,      # Filtra ruido
+    max_tamano_objeto=10000,    # Filtra fondo
+    ecualizar=True,             # Mejora contraste
+    invertir=False,             # True si objetos oscuros
+    mostrar_pasos=True
+)
+```
+
+---
+
 ## Uso modular
 
 Cada función puede usarse de forma independiente para construir pipelines personalizados:
@@ -202,7 +306,10 @@ for obj in propiedades:
 ### Pipeline completo (`counting.py`)
 | Función | Descripción |
 |---|---|
-| `contar_objetos()` | Pipeline completo de segmentación y conteo |
+| `contar_objetos()` | Pipeline completo de segmentación y conteo con parámetros configurables |
+| `contar_objetos_claros()` | Configuración predefinida para objetos claros sobre fondo oscuro |
+| `contar_objetos_oscuros()` | Configuración predefinida para objetos oscuros sobre fondo claro |
+| `contar_objetos_pequenos()` | Configuración predefinida para objetos pequeños y cercanos |
 | `visualizar_resultados()` | Visualización de resultados en mosaico |
 
 ---
